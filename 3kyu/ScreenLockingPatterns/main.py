@@ -1,129 +1,32 @@
 def count_patterns_from(firstPoint, length):
-    lockScreen = [[1,2,3],[4,5,6],[7,8,9]]
-    point_map = {
-        'A': (0, 0), 'B': (0, 1), 'C': (0, 2),
-        'D': (1, 0), 'E': (1, 1), 'F': (1, 2),
-        'G': (2, 0), 'H': (2, 1), 'I': (2, 2)
-    }
+    point_map = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9}
     visited = []
 
-    def nextPoint(point_x, point_y, remaining_steps):
+    skip_points = [[0] * 10 for _ in range(10)]
+
+    skip_points[1][3] = skip_points[3][1] = 2
+    skip_points[4][6] = skip_points[6][4] = 5
+    skip_points[7][9] = skip_points[9][7] = 8
+    skip_points[1][7] = skip_points[7][1] = 4
+    skip_points[2][8] = skip_points[8][2] = 5
+    skip_points[3][9] = skip_points[9][3] = 6
+    skip_points[1][9] = skip_points[9][1] = 5
+    skip_points[3][7] = skip_points[7][3] = 5
+
+    def nextPoint(point, remaining_steps):
         if remaining_steps == 0:
             return 1
+        visited.append(point)
         count = 0
-        visited.append(lockScreen[point_x][point_y])
-        try:
-            # Top-left diagonal movement
-            if lockScreen[point_x - 1][point_y - 1] and lockScreen[point_x - 1][point_y - 1] not in visited:
-                count += nextPoint(point_x - 1, point_y - 1, remaining_steps - 1)
-
-            # Left movement
-            if lockScreen[point_x][point_y - 1] and lockScreen[point_x][point_y - 1] not in visited:
-                count += nextPoint(point_x, point_y - 1, remaining_steps - 1)
-
-            # Top movement
-            if lockScreen[point_x - 1][point_y] and lockScreen[point_x - 1][point_y] not in visited:
-                count += nextPoint(point_x - 1, point_y, remaining_steps - 1)
-
-            # Skip one vertical up (requires middle point visited)
-            if lockScreen[point_x - 2][point_y] and lockScreen[point_x - 1][point_y] in visited:
-                count += nextPoint(point_x - 2, point_y, remaining_steps - 1)
-
-            # Top-left skip diagonal (requires middle point visited)
-            if lockScreen[point_x - 2][point_y - 2] and lockScreen[point_x - 1][point_y - 1] in visited:
-                count += nextPoint(point_x - 2, point_y - 2, remaining_steps - 1)
-
-            # Skip one horizontal left (requires middle point visited)
-            if lockScreen[point_x][point_y - 2] and lockScreen[point_x][point_y - 1] in visited:
-                count += nextPoint(point_x, point_y - 2, remaining_steps - 1)
-
-            # Top-right diagonal movement
-            if lockScreen[point_x - 1][point_y + 1] and lockScreen[point_x - 1][point_y + 1] not in visited:
-                count += nextPoint(point_x - 1, point_y + 1, remaining_steps - 1)
-
-            # Right movement
-            if lockScreen[point_x][point_y + 1] and lockScreen[point_x][point_y + 1] not in visited:
-                count += nextPoint(point_x, point_y + 1, remaining_steps - 1)
-
-            # Skip one horizontal right (requires middle point visited)
-            if lockScreen[point_x][point_y + 2] and lockScreen[point_x][point_y + 1] in visited:
-                count += nextPoint(point_x, point_y + 2, remaining_steps - 1)
-
-            # Top-right skip diagonal (requires middle point visited)
-            if lockScreen[point_x - 2][point_y + 2] and lockScreen[point_x - 1][point_y + 1] in visited:
-                count += nextPoint(point_x - 2, point_y + 2, remaining_steps - 1)
-
-            # Bottom-left diagonal movement
-            if lockScreen[point_x + 1][point_y - 1] and lockScreen[point_x + 1][point_y - 1] not in visited:
-                count += nextPoint(point_x + 1, point_y - 1, remaining_steps - 1)
-
-            # Bottom movement
-            if lockScreen[point_x + 1][point_y] and lockScreen[point_x + 1][point_y] not in visited:
-                count += nextPoint(point_x + 1, point_y, remaining_steps - 1)
-
-            # Skip one vertical down (requires middle point visited)
-            if lockScreen[point_x + 2][point_y] and lockScreen[point_x + 1][point_y] in visited:
-                count += nextPoint(point_x + 2, point_y, remaining_steps - 1)
-
-            # Bottom-left skip diagonal (requires middle point visited)
-            if lockScreen[point_x + 2][point_y - 2] and lockScreen[point_x + 1][point_y - 1] in visited:
-                count += nextPoint(point_x + 2, point_y - 2, remaining_steps - 1)
-
-            # Bottom-right diagonal movement
-            if lockScreen[point_x + 1][point_y + 1] and lockScreen[point_x + 1][point_y + 1] not in visited:
-                count += nextPoint(point_x + 1, point_y + 1, remaining_steps - 1)
-
-            # Skip one diagonal down-right (requires middle point visited)
-            if lockScreen[point_x + 2][point_y + 2] and lockScreen[point_x + 1][point_y + 1] in visited:
-                count += nextPoint(point_x + 2, point_y + 2, remaining_steps - 1)
-
-            # Adding large diagonal skips like (2, 1) or (1, 2) movements:
-
-            # Skip two steps down-right
-            if lockScreen[point_x + 2][point_y + 1] and lockScreen[point_x + 2][point_y + 1] not in visited:
-                count += nextPoint(point_x + 2, point_y + 1, remaining_steps - 1)
-
-            # Skip two steps down-left
-            if lockScreen[point_x + 2][point_y - 1] and lockScreen[point_x + 2][point_y - 1] not in visited:
-                count += nextPoint(point_x + 2, point_y - 1, remaining_steps - 1)
-
-            # Skip two steps up-right
-            if lockScreen[point_x - 1][point_y + 2] and lockScreen[point_x - 1][point_y + 2] not in visited:
-                count += nextPoint(point_x - 1, point_y + 2, remaining_steps - 1)
-
-            # Skip two steps up-left
-            if lockScreen[point_x - 1][point_y - 2] and lockScreen[point_x - 1][point_y - 2] not in visited:
-                count += nextPoint(point_x - 1, point_y - 2, remaining_steps - 1)
-
-            # Skip two steps down-left
-            if lockScreen[point_x + 1][point_y - 2] and lockScreen[point_x + 1][point_y - 2] not in visited:
-                count += nextPoint(point_x + 1, point_y - 2, remaining_steps - 1)
-
-            # Skip two steps down-right
-            if lockScreen[point_x + 1][point_y + 2] and lockScreen[point_x + 1][point_y + 2] not in visited:
-                count += nextPoint(point_x + 1, point_y + 2, remaining_steps - 1)
-
-            # Skip two steps up-right
-            if lockScreen[point_x - 2][point_y + 1] and lockScreen[point_x - 2][point_y + 1] not in visited:
-                count += nextPoint(point_x - 2, point_y + 1, remaining_steps - 1)
-
-            # Skip two steps up-left
-            if lockScreen[point_x - 2][point_y - 1] and lockScreen[point_x - 2][point_y - 1] not in visited:
-                count += nextPoint(point_x - 2, point_y - 1, remaining_steps - 1)
-
-        except:
-            pass
-
+        for next_step in range(1, 10):
+            if next_step not in visited and (skip_points[point][next_step] == 0 or skip_points[point][next_step] in visited):
+                count += nextPoint(next_step, remaining_steps-1)
         visited.pop()
-
         return count
 
     if length == 1:
         return 1
-    start_x, start_y = point_map[firstPoint]
-    return nextPoint(start_x, start_y, length - 1)
 
+    return nextPoint(point_map[firstPoint], length - 1)
 
-
-output = count_patterns_from('E', 4)
-print(output)
+print(count_patterns_from("E", 4))
