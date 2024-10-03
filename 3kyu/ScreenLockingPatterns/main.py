@@ -28,5 +28,3 @@ def count_patterns_from(firstPoint, length):
         return 1
 
     return nextPoint(point_map[firstPoint], length - 1)
-
-print(count_patterns_from("E", 4))
